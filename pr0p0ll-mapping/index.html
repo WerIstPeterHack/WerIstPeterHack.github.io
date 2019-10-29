@@ -9,99 +9,115 @@
 <body>
 	<script>
 
-	function process() {
+	window.addEventListener('load', function(){
 
-		var results = JSON.parse(document.getElementById('jsonData').value);
-		var mappings = [];
-		var answerKey = new RegExp('a\\d+'); // to identify answer properties
+		function submit(event){
+			if(event.which === 13){
+				process();
+				event.preventDefault(); 
+			}
+		}
 
-		for (let key in results){
-			
-			if(results.hasOwnProperty(key)){
-					
-				// let's parse a question
-				if (key != 'info') {
+		document.getElementById('jsonData').addEventListener('keypress', submit);
+		document.getElementById('jsonData').focus();
 
-					// first add this question's id to header as a new column
-					// this makes it easier for you to do cross-references when 
-					// analysing the data 
-					// (e.g. how many people answered a1 in q1 also answered a2 in q3)
+		function process() {
 
-					var answers = results[key];
-					
-					var mapping = [];
-										
-					for (let answer in answers) {
+			var results = JSON.parse(document.getElementById('jsonData').value);
+			var mappings = [];
+			var answerKey = new RegExp('a\\d+'); // to identify answer properties
 
-						if(answers.hasOwnProperty(answer)){
+			for (let key in results){
+				
+				if(results.hasOwnProperty(key)){
+						
+					// let's parse a question
+					if (key != 'info') {
 
-							// if this property matches you regex (starts with an a, ends with a number), it contains answer details
-							if (answerKey.test(answer)) {
+						// first add this question's id to header as a new column
+						// this makes it easier for you to do cross-references when 
+						// analysing the data 
+						// (e.g. how many people answered a1 in q1 also answered a2 in q3)
 
-								mapping['0_answerId'] = answers[answer].id;
-								mapping['1_question'] = results[key].title;
-								mapping['2_answer'] = answers[answer].title;
-								mappings.push(mapping);
-								mapping = [];
+						var answers = results[key];
+						
+						var mapping = [];
+											
+						for (let answer in answers) {
+
+							if(answers.hasOwnProperty(answer)){
+
+								// if this property matches you regex (starts with an a, ends with a number), it contains answer details
+								if (answerKey.test(answer)) {
+
+									mapping['0_answerId'] = answers[answer].id;
+									mapping['1_question'] = results[key].title;
+									mapping['2_answer'] = answers[answer].title;
+									mappings.push(mapping);
+									mapping = [];
+
+								}
+
 
 							}
 
-
 						}
+					}
+				
+				}
+			}
+
+
+			var output = ''
+
+			for (var i = 0; i < mappings.length; i++) {
+			
+				var line = '\r\n';
+
+
+				for (var index in mappings[i]) {
+
+					// header
+					if (i == 0) {
+
+						output += '"' + index + '"\t';
 
 					}
+
+					line += '"' + mappings[i][index] + '"\t';
+
 				}
-			
-			}
-		}
 
-
-		var output = ''
-
-		for (var i = 0; i < mappings.length; i++) {
-		
-			var line = '\r\n';
-
-
-			for (var index in mappings[i]) {
-
-				// header
 				if (i == 0) {
-
-					output += '"' + index + '"\t';
+				
+					output = output.slice(0, -1);
 
 				}
+				line = line.slice(0, -1);
 
-				line += '"' + mappings[i][index] + '"\t';
-
+				output += line;
 			}
 
-			if (i == 0) {
-			
-				output = output.slice(0, -1);
+			document.getElementById('result').innerHTML  = output;
+			document.getElementById('result').focus();
+			document.getElementById('result').select();
 
-			}
-			line = line.slice(0, -1);
-
-			output += line;
 		}
 
-		document.getElementById('result').innerHTML  = output;
-
-	}
+	});
 
 	</script>
 
 	<div>
-		<label for="text">pr0p0ll-Ergebniss-JSON hier einfügen:</label>
+		<label for="text">pr0p0ll-Ergebniss-JSON hier einfügen und mit ENTER umwandeln:</label>
 	</div>
 	<div>
-		<textarea id="jsonData" name="jsonData" cols="50" rows="10"></textarea> 	
+		<textarea style="width: 100%;" id="jsonData" name="jsonData" cols="50" rows="10"></textarea> 	
 	</div>
 	<div>
 		<button onclick="process()">Click me</button>
 	</div>
-		<textarea id="result" name="result" cols="50" rows="10"></textarea> 	
+		<textarea style="width: 100%;" id="result" name="result" cols="50" rows="10"></textarea> 	
 </body>
 
 </html> 
