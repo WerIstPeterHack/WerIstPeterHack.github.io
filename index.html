@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+<body>
+	<script>
+	function process() {
+
+		var results = JSON.parse(document.getElementById('jsonData').value);
+		var mappings = [];
+		var questionIds = [];
+		var answerKey = new RegExp('a\\d+'); // to identify answer properties
+
+		for (let key in results){
+			
+			if(results.hasOwnProperty(key)){
+					
+				// let's parse a question
+				if (key != 'info') {
+
+					// first add this question's id to header as a new column
+					// this makes it easier for you to do cross-references when 
+					// analysing the data 
+					// (e.g. how many people answered a1 in q1 also answered a2 in q3)
+					<!-- mappings[].push(results[key]['id']); -->
+
+					var question = results[key];
+					if (!questionIds.includes(question.id)) {questionIds.push(question.id);}
+					var mapping = [];
+										
+					for (let details in question) {
+
+						if(question.hasOwnProperty(details)){
+
+							// if this property matches you regex (starts with an a, ends with a number), it contains answer details
+							if (answerKey.test(details)) {
+
+								mapping['question'] = results[key].title;
+								mapping['answerId'] = question[details]['id'];
+								mapping[question.id] = question[details]['title'];
+								mappings.push(mapping);
+								mapping = [];
+
+							}
+
+
+						}
+
+					}
+				}
+				<!-- console.log(`${key} : ${object[key]}`) -->
+			
+			}
+		}
+
+	
+		// add all the columns and header array
+		for (let key in mappings) {
+
+			if(mappings.hasOwnProperty(key)){
+				
+				for (let i = 0; i <= questionIds.length - 1; i++) {
+					
+					if (mappings[key][questionIds[i]] == undefined) {
+						
+						mappings[key][questionIds[i]] = '';
+
+					} 
+					
+				}
+
+			}
+
+		}
+
+		// outpout
+		var output = '';
+
+		for (var i = 0; i < mappings.length; i++) {
+		
+			var line = '\r\n';
+
+			for (var index in mappings[i]) {
+
+				// header
+				if (i == 0) {
+
+					output += index + ';';
+
+				}
+
+				line += mappings[i][index] + ';';
+
+			}
+
+			if (i == 0) {
+			
+				output = output.slice(0, -1);
+
+			}
+			line = line.slice(0, -1);
+
+			output += line;
+		}
+
+		document.getElementById('result').value = output;
+
+	}
+
+	</script>
+
+	<div>
+		<label for="text">pr0p0ll-Ergebniss-JSON hier einfügen:</label>
+	</div>
+	<div>
+		<textarea id="jsonData" name="jsonData" cols="50" rows="10"></textarea> 	
+	</div>
+	<div>
+		<button onclick="process()">Click me</button>
+	</div>
+		<textarea id="result" name="result" cols="50" rows="10"></textarea> 	
+</body>
+
+</html> 
