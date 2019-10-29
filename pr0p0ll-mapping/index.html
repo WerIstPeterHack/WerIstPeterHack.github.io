@@ -40,8 +40,8 @@
 							// if this property matches you regex (starts with an a, ends with a number), it contains answer details
 							if (answerKey.test(details)) {
 
-								mapping['question'] = results[key].title;
 								mapping['answerId'] = question[details]['id'];
+								mapping['question'] = results[key].title;
 								mapping[question.id] = question[details]['title'];
 								mappings.push(mapping);
 								mapping = [];
@@ -79,22 +79,29 @@
 		}
 
 		// outpout
-		var output = '';
+		var output = '"answerId"\t';
 
 		for (var i = 0; i < mappings.length; i++) {
 		
 			var line = '\r\n';
 
+			// this  is to force the foreing key to be in first column, makes it easier in Excel
+			line += '"' + mappings[i]['answerId'] + '"\t';
+
 			for (var index in mappings[i]) {
 
-				// header
-				if (i == 0) {
+				if (index != 'answerId') {
 
-					output += '"' + index + '";';
+					// header
+					if (i == 0) {
+
+						output += '"' + index + '"\t';
+
+					}
+
+					line += '"' + mappings[i][index] + '"\t';
 
 				}
-
-				line += '"' + mappings[i][index] + '";';
 
 			}
 
