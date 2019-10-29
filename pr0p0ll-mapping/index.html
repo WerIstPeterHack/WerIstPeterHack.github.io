@@ -13,7 +13,6 @@
 
 		var results = JSON.parse(document.getElementById('jsonData').value);
 		var mappings = [];
-		var questionIds = [];
 		var answerKey = new RegExp('a\\d+'); // to identify answer properties
 
 		for (let key in results){
@@ -27,22 +26,21 @@
 					// this makes it easier for you to do cross-references when 
 					// analysing the data 
 					// (e.g. how many people answered a1 in q1 also answered a2 in q3)
-					<!-- mappings[].push(results[key]['id']); -->
 
-					var question = results[key];
-					if (!questionIds.includes(question.id)) {questionIds.push(question.id);}
+					var answers = results[key];
+					
 					var mapping = [];
 										
-					for (let details in question) {
+					for (let answer in answers) {
 
-						if(question.hasOwnProperty(details)){
+						if(answers.hasOwnProperty(answer)){
 
 							// if this property matches you regex (starts with an a, ends with a number), it contains answer details
-							if (answerKey.test(details)) {
+							if (answerKey.test(answer)) {
 
-								mapping['answerId'] = question[details]['id'];
-								mapping['question'] = results[key].title;
-								mapping[question.id] = question[details]['title'];
+								mapping['0_answerId'] = answers[answer].id;
+								mapping['1_question'] = results[key].title;
+								mapping['2_answer'] = answers[answer].title;
 								mappings.push(mapping);
 								mapping = [];
 
@@ -53,55 +51,28 @@
 
 					}
 				}
-				<!-- console.log(`${key} : ${object[key]}`) -->
 			
 			}
 		}
 
-	
-		// add all the columns and header array
-		for (let key in mappings) {
 
-			if(mappings.hasOwnProperty(key)){
-				
-				for (let i = 0; i <= questionIds.length - 1; i++) {
-					
-					if (mappings[key][questionIds[i]] == undefined) {
-						
-						mappings[key][questionIds[i]] = '';
-
-					} 
-					
-				}
-
-			}
-
-		}
-
-		// outpout
-		var output = '"answerId"\t';
+		var output = ''
 
 		for (var i = 0; i < mappings.length; i++) {
 		
 			var line = '\r\n';
 
-			// this  is to force the foreing key to be in first column, makes it easier in Excel
-			line += '"' + mappings[i]['answerId'] + '"\t';
 
 			for (var index in mappings[i]) {
 
-				if (index != 'answerId') {
+				// header
+				if (i == 0) {
 
-					// header
-					if (i == 0) {
-
-						output += '"' + index + '"\t';
-
-					}
-
-					line += '"' + mappings[i][index] + '"\t';
+					output += '"' + index + '"\t';
 
 				}
+
+				line += '"' + mappings[i][index] + '"\t';
 
 			}
 
