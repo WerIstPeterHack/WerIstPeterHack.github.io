@@ -1,6 +1,20 @@
 <?php
 
-    $results = json_decode(file_get_contents("json_poll.json"));
+    if (!isset($_POST['jsonData'])) {
+
+        ?>
+            <form action="index.php?ts=1" method="post"> 
+                <label for="text">pr0p0ll-Ergebniss-JSON hier einfügen:</label>
+                <textarea id="jsonData" name="jsonData" cols="35" rows="4"></textarea> 	
+                <input type="submit" value="Ids holen" />
+            </form> 
+        <?php
+    
+        die();
+
+    }
+
+    $results = json_decode(file_get_contents("p0ll.json"));
     
     $mapping = [array("id","text")];
 
