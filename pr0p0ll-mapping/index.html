@@ -8,6 +8,7 @@
 
 <body>
 	<script>
+
 	function process() {
 
 		var results = JSON.parse(document.getElementById('jsonData').value);
@@ -89,11 +90,11 @@
 				// header
 				if (i == 0) {
 
-					output += index + ';';
+					output += '"' + index + '";';
 
 				}
 
-				line += mappings[i][index] + ';';
+				line += '"' + mappings[i][index] + '";';
 
 			}
 
@@ -107,7 +108,7 @@
 			output += line;
 		}
 
-		document.getElementById('result').value = output;
+		document.getElementById('result').innerHTML  = output;
 
 	}
 
